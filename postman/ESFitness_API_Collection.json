@@ -1,0 +1,1034 @@
+{
+    "info": {
+        "_postman_id": "a62c4537-a8fa-4ac2-844e-d3b32ad57ac3",
+        "name": "ESFitness API Collection",
+        "description": "Complete API collection for the ESFitness backend project including Users, Plans, Subscriptions, and Payments",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "21971226"
+    },
+    "item": [
+        {
+            "name": "General",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/ping",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "ping"]
+                        },
+                        "description": "Health check endpoint to verify the API is running."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "User Signup",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/signup",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "signup"]
+                        },
+                        "description": "Register a new user account. Sends a verification email."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify Email",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/verify-email?token={{verificationToken}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "verify-email"],
+                            "query": [
+                                {
+                                    "key": "token",
+                                    "value": "{{verificationToken}}"
+                                }
+                            ]
+                        },
+                        "description": "Verify user's email address using the token sent in the verification email."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "User Sign In",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData && jsonData.data && jsonData.data.token) {",
+                                    "    pm.environment.set('authToken', jsonData.data.token);",
+                                    "    pm.environment.set('userToken', jsonData.data.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/signin",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "signin"]
+                        },
+                        "description": "Authenticate user and get JWT token. Auto-saves token to environment."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Admin Sign In",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData && jsonData.data && jsonData.data.token) {",
+                                    "    pm.environment.set('authToken', jsonData.data.token);",
+                                    "    pm.environment.set('adminToken', jsonData.data.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@esfitness.com\",\n  \"password\": \"Admin@123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/signin",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "signin"]
+                        },
+                        "description": "Admin sign in with seeded admin credentials. Auto-saves admin token."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Forgot Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/forgot-password",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "forgot-password"]
+                        },
+                        "description": "Request a password reset link via email."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"newPassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/reset-password",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "reset-password"]
+                        },
+                        "description": "Reset password using the token received via email."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Authentication-related endpoints"
+        },
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Get All Users (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users"]
+                        },
+                        "description": "Get all users (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User by ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "{{userId}}"]
+                        },
+                        "description": "Get user by ID (admin or own profile)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create User (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Admin Created User\",\n  \"email\": \"admin.created@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users"]
+                        },
+                        "description": "Create a new user (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated.email@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "{{userId}}"]
+                        },
+                        "description": "Update user by ID (admin or own profile)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "{{userId}}"]
+                        },
+                        "description": "Delete user by ID (admin or own profile)."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "User management endpoints"
+        },
+        {
+            "name": "Plans Management",
+            "item": [
+                {
+                    "name": "Get All Plans",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/plans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "plans"]
+                        },
+                        "description": "Get all available gym membership plans (public endpoint)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Plan by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/plans/{{planId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "plans", "{{planId}}"]
+                        },
+                        "description": "Get specific plan details by ID (public endpoint)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Plan (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Elite Plan\",\n  \"type\": \"PREMIUM\",\n  \"description\": \"Ultimate gym experience with all amenities\",\n  \"price\": 99.99,\n  \"currency\": \"USD\",\n  \"duration\": \"MONTHLY\",\n  \"features\": [\n    \"24/7 gym access\",\n    \"Personal trainer sessions\",\n    \"Nutrition consultation\",\n    \"Premium amenities\",\n    \"Guest passes\"\n  ],\n  \"status\": \"ACTIVE\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/plans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "plans"]
+                        },
+                        "description": "Create a new gym membership plan (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Plan (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Plan Name\",\n  \"description\": \"Updated plan description\",\n  \"price\": 89.99,\n  \"features\": [\n    \"Updated feature 1\",\n    \"Updated feature 2\"\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/plans/{{planId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "plans", "{{planId}}"]
+                        },
+                        "description": "Update existing plan (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Plan (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/plans/{{planId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "plans", "{{planId}}"]
+                        },
+                        "description": "Soft delete a plan (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Seed Default Plans (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/plans/seed/default",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "plans", "seed", "default"]
+                        },
+                        "description": "Seed default gym plans (Basic, Standard, Premium) - admin only."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Gym membership plans management"
+        },
+        {
+            "name": "Subscriptions Management",
+            "item": [
+                {
+                    "name": "Get User Subscriptions",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{userToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions"]
+                        },
+                        "description": "Get current user's subscriptions (users get their own, admins get all)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Subscriptions (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions"]
+                        },
+                        "description": "Get all subscriptions (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Subscription by ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions", "{{subscriptionId}}"]
+                        },
+                        "description": "Get specific subscription details by ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Subscription",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{userToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"billingCycle\": \"MONTHLY\",\n  \"paymentMethodId\": \"pm_1234567890\",\n  \"trialDays\": 7\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions"]
+                        },
+                        "description": "Create a new subscription for the current user."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Subscription",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"planId\": \"{{newPlanId}}\",\n  \"metadata\": {\n    \"notes\": \"Subscription updated by user\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions", "{{subscriptionId}}"]
+                        },
+                        "description": "Update subscription details."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Subscription",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cancelAtPeriodEnd\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}/cancel",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions", "{{subscriptionId}}", "cancel"]
+                        },
+                        "description": "Cancel subscription (at period end or immediately)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Subscription Immediately",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cancelAtPeriodEnd\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/subscriptions/{{subscriptionId}}/cancel",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "subscriptions", "{{subscriptionId}}", "cancel"]
+                        },
+                        "description": "Cancel subscription immediately."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Subscription management with Stripe integration"
+        },
+        {
+            "name": "Payments Management",
+            "item": [
+                {
+                    "name": "Get User Payments",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{userToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/payments",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "payments"]
+                        },
+                        "description": "Get current user's payment history."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Payments (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{adminToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/payments",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "payments"]
+                        },
+                        "description": "Get all payments (admin only)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Payment by ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "payments", "{{paymentId}}"]
+                        },
+                        "description": "Get specific payment details by ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stripe Webhook (Payment Success)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "stripe-signature",
+                                "value": "{{stripeSignature}}",
+                                "description": "Stripe webhook signature header"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"object\": \"event\",\n  \"api_version\": \"2020-08-27\",\n  \"created\": 1326853478,\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_payment_intent\",\n      \"object\": \"payment_intent\",\n      \"amount\": 2999,\n      \"currency\": \"usd\",\n      \"status\": \"succeeded\",\n      \"description\": \"Gym membership payment\",\n      \"metadata\": {\n        \"userId\": \"{{userId}}\",\n        \"subscriptionId\": \"{{subscriptionId}}\"\n      }\n    }\n  },\n  \"livemode\": false,\n  \"pending_webhooks\": 1,\n  \"request\": {\n    \"id\": null,\n    \"idempotency_key\": null\n  },\n  \"type\": \"payment_intent.succeeded\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/payments/webhook",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "payments", "webhook"]
+                        },
+                        "description": "Stripe webhook endpoint for payment_intent.succeeded events."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stripe Webhook (Payment Failed)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "stripe-signature",
+                                "value": "{{stripeSignature}}",
+                                "description": "Stripe webhook signature header"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"object\": \"event\",\n  \"api_version\": \"2020-08-27\",\n  \"created\": 1326853478,\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_payment_intent_failed\",\n      \"object\": \"payment_intent\",\n      \"amount\": 2999,\n      \"currency\": \"usd\",\n      \"status\": \"payment_failed\",\n      \"description\": \"Gym membership payment\",\n      \"last_payment_error\": {\n        \"message\": \"Your card was declined.\"\n      },\n      \"metadata\": {\n        \"userId\": \"{{userId}}\",\n        \"subscriptionId\": \"{{subscriptionId}}\"\n      }\n    }\n  },\n  \"livemode\": false,\n  \"pending_webhooks\": 1,\n  \"request\": {\n    \"id\": null,\n    \"idempotency_key\": null\n  },\n  \"type\": \"payment_intent.payment_failed\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/payments/webhook",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "payments", "webhook"]
+                        },
+                        "description": "Stripe webhook endpoint for payment_intent.payment_failed events."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Payment tracking and Stripe webhook handling"
+        },
+        {
+            "name": "Media Management",
+            "item": [
+                {
+                    "name": "Upload Single File",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/media/upload",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "media", "upload"]
+                        },
+                        "description": "Upload a single file. Field name: file."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload Multiple Files",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "files",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/media/upload/multiple",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "media", "upload", "multiple"]
+                        },
+                        "description": "Upload multiple files. Field name: files."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete File",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/media/delete/{{filename}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "media", "delete", "{{filename}}"]
+                        },
+                        "description": "Delete a file by filename."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Media upload and management APIs"
+        },
+        {
+            "name": "Socket.IO",
+            "item": [
+                {
+                    "name": "Send Socket Event",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"eventName\": \"testEvent\",\n  \"payload\": {\n    \"message\": \"Hello from ESFitness API!\",\n    \"timestamp\": \"{{$timestamp}}\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/v1/users/socket-data",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "v1", "users", "socket-data"]
+                        },
+                        "description": "Send socket.io event data to all connected clients."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Socket.IO real-time communication endpoints"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [""]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [""]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000",
+            "type": "string",
+            "description": "Base URL for the ESFitness API"
+        },
+        {
+            "key": "authToken",
+            "value": "",
+            "type": "string",
+            "description": "JWT token for authenticated requests"
+        },
+        {
+            "key": "adminToken",
+            "value": "",
+            "type": "string",
+            "description": "JWT token for admin requests"
+        },
+        {
+            "key": "userToken",
+            "value": "",
+            "type": "string",
+            "description": "JWT token for regular user requests"
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "string",
+            "description": "User ID for testing user-specific endpoints"
+        },
+        {
+            "key": "planId",
+            "value": "",
+            "type": "string",
+            "description": "Plan ID for subscription and plan testing"
+        },
+        {
+            "key": "subscriptionId",
+            "value": "",
+            "type": "string",
+            "description": "Subscription ID for testing subscription endpoints"
+        },
+        {
+            "key": "paymentId",
+            "value": "",
+            "type": "string",
+            "description": "Payment ID for testing payment endpoints"
+        },
+        {
+            "key": "filename",
+            "value": "",
+            "type": "string",
+            "description": "Filename for media management endpoints"
+        },
+        {
+            "key": "verificationToken",
+            "value": "",
+            "type": "string",
+            "description": "Email verification token"
+        },
+        {
+            "key": "resetToken",
+            "value": "",
+            "type": "string",
+            "description": "Password reset token"
+        },
+        {
+            "key": "stripeSignature",
+            "value": "",
+            "type": "string",
+            "description": "Stripe webhook signature for testing webhooks"
+        }
+    ]
+}

@@ -13,7 +13,7 @@ const signup = async (req: Request, res: Response) => {
     const { ...userData } = req.body;
     const newUser = await UserService.createUser({ ...userData, role: UserRole.USER, isVerified: false });
     // Generate verification token (same logic as forgot password)
-    const verificationToken = await UserService.generateAuthToken(newUser, '15m');
+    const verificationToken = UserService.generateAuthToken(newUser, '15m');
     const emailSent = await sendEmail(
         newUser.email,
         'Verify your email',
