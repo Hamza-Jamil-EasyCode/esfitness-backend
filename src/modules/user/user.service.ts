@@ -41,11 +41,9 @@ const deleteUser = async (id: string): Promise<boolean> => {
 };
 
 // Validate user credentials (email/password or third-party)
-const validateUserCredentials = async (email: string, password?: string, googleId?: string, facebookId?: string): Promise<User | null> => {
+const validateUserCredentials = async (email: string, password?: string): Promise<User | null> => {
     const user = await getUserByEmail(email);
     if (!user) return null;
-    if (googleId && (user as User).googleId === googleId) return user;
-    if (facebookId && (user as User).facebookId === facebookId) return user;
     if (password && user.password && user.matchPassword) {
         if (await user.matchPassword(password)) return user;
     }

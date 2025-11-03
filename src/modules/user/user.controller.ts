@@ -92,8 +92,8 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 const signin = async (req: Request, res: Response) => {
-    const { email, password, googleId, facebookId } = req.body;
-    const user = await UserService.validateUserCredentials(email, password, googleId, facebookId);
+    const { email, password } = req.body;
+    const user = await UserService.validateUserCredentials(email, password);
     if (!user) {
         throw new CustomError(ERROR_MESSAGES.INVALID_CREDENTIALS, 401);
     }

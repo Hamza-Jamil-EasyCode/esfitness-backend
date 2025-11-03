@@ -6,8 +6,14 @@ interface User extends Document {
     name: string;
     email: string;
     password?: string; // Optional for third-party logins.
+    contact?: string;
     role: UserRole; // User role.
     isVerified: boolean;
+    isActive: boolean;
+    isDeleted: boolean;
+    deletedAt?: Date;
+    stripeCustomerId?: string; // Stripe customer ID
+    defaultCardId?: string; // Default Stripe payment method ID (card only)
 }
 
 // Add instance method for password comparison
@@ -29,7 +35,9 @@ const UserSchema: Schema = new Schema(
         isVerified: { type: Boolean, default: false },
         isActive: { type: Boolean, default: false },
         isDeleted: { type: Boolean, default: false },
-        deletedAt: { type: Date, default: null }
+        deletedAt: { type: Date, default: null },
+        stripeCustomerId: { type: String }, // Stripe customer ID
+        defaultCardId: { type: String } // Default Stripe payment method ID (card only)
     },
     { timestamps: true }
 );

@@ -2,6 +2,7 @@ import cluster from 'cluster';
 import os from 'os';
 import dotenv from 'dotenv';
 import app from './app';
+import seedData from './seeders';
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 if (cluster.isPrimary) {
     const numCPUs = process.env.NODE_ENV === 'production' ? os.cpus().length : 1;
     console.log(`Primary process is running. Forking ${numCPUs} workers...`);
-
+    seedData();
     // Fork workers
     for (let i = 0; i < numCPUs; i++) {
         cluster.fork();

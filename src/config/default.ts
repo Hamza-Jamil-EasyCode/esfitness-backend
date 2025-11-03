@@ -21,7 +21,9 @@ const config = {
         apiURL: process.env.BREVO_API_URL,
         senderName: process.env.BREVO_SENDER_NAME,
         senderEmail: process.env.BREVO_SENDER_EMAIL
-    }
+    },
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET
 };
 
 export default config;
